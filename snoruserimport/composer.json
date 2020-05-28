@@ -1,0 +1,13 @@
+{
+    "name": "snor/userimport",
+    "description": "//",
+    "type": "project",
+    "require": {
+        "jamesmoss/toml": "dev-master",
+		"guzzlehttp/guzzle": "~6.0"
+    },
+	
+    "autoload": {
+        "psr-4": {"Snor\\UserImport\\": "src/"}
+    }
+}

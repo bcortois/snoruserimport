@@ -1,0 +1,120 @@
+# This is a TOML document.
+
+title = "settings"
+
+[school]
+# school
+
+# Vul de schoolafkorting in
+code_name = ""
+
+[informat]
+# informat #
+# Deze sectie dient om de connectie en calls naar de Informat webAPI in te stellen.
+
+# gebruiker = username met de juiste rechten om gebruik te maken van de gewenste services
+gebruiker = ""
+wachtwoord = ""
+schooljaar = "2019-20" # (formaat jjjj-jj)
+referentie_datum = "" # (formaat dd-mm-jjjj - geef geen error bij foute notatie...)Zoek leerlingen die ingeschreven waren op een bepaalde datum. Laat leeg om de dag van vandaag te gebruiken.
+hoofdstructuur = "" # standaard leeg
+instellingsnummer = [""] # voor meerde instellingsnummers gebruik je een comma als scheidingsteken (bv. ["xxxxx","xxxxx"])
+
+# base_uri = de url naar de root van de web api waar de Informat webservice draait. Default: https://webservice.informatsoftware.be/wsInformat.asmx
+base_uri = "https://webservice.informatsoftware.be/wsInformat.asmx"
+
+	[informat.resource_uri]
+	# informat.resource_uri
+	# Deze subsectie bevat de url's van de verschillende Informat webservices.
+	get_students = "/Lln" # Default: /Lln
+	
+[active_directory]
+
+    [active_directory.snor]
+    dc = "" # Het ip-adres van de AD DC server
+    user_dn = "" # De distinguishedName van een gebruiker om ldapqueries uit te voeren op de AD DC server
+    wachtwoord = "" # het wachtwoord van de gebruiker
+
+        [active_directory.snor.filter]
+        # leerlingen_base_dn #
+        # het dn pad naar de ou waar de leerlingenaccounts opgeslagen worden. Alle sub- OU's worden mee in rekening genomen.
+        leerlingen_base_dn = ""
+
+        # object_attributes #
+        # Geef aan welke attributen gebruikt moeten worden bij de sync
+        # NIET AANPASSEN
+        object_attributen = ["userprincipalname","givenname","sn","displayname","mail","name","1","telephonenumber","memberof","employeeid","info","department","physicalDeliveryOfficeName","title"]
+
+[wam_api]
+# wam_api #
+# Deze sectie dient om de connectie en calls naar de wam API in te stellen.
+
+# base_uri = de url naar de root van de web api war de wam service draait
+base_uri = ""
+
+# gebruiker = username met de juiste rechten om gebruik te maken van de gewenste services
+gebruiker = "" # (formaat: "domein\\gebruiker")
+wachtwoord = ""
+
+	[wam_api.resource_uri]
+	# wam_api.resource_uri
+	# Deze subsectie bevat de url's van de verschillende wam services.
+	add_user = "/new-user.php"
+	update_user = "/update-user.php"
+
+[sync_instellingen]
+# sync_instellingen #
+# Met deze properties kan je bepalen hoe velden in AD worden ingevuld
+
+    [sync_instellingen.ad_user_mapping]
+	# Mapping van de properties van de klasse AdUser met de attributen van de User Object in AD.
+    AdministrativeId = "employeeid"
+    FirstName = "givenname"
+    LastName = "sn"
+    EmailAddress = "mail"
+    Department = "department"
+    UserPrincipalName = "userprincipalname"
+    SchoolName = "physicalDeliveryOfficeName"
+    Role = "title"
+    Synced = "info"
+	
+	[sync_instellingen.wam_user_mapping]
+	# Mapping van de properties van de klasse WamUser met de post fields van de wam api.
+    AdministrativeId = "employee_id"
+    FirstName = "first_name"
+    LastName = "last_name"
+	DisplayName = "display_name"
+    EmailAddress = "email_address"
+    Department = "department"
+    SchoolName = "company"
+    Role = "title"
+	SamAccountName = "sam_account_name"
+	UserPrincipalName = "upn"
+	Path = "ou"
+	Enabled = "enabled"
+	ChangePasswordAtLogon = "reset_password"
+    Synced = "info"
+
+    [sync_instellingen.leerling]
+    # deze instellingen hebben enkel betrekking tot accounts van leerlingen
+
+    # department #
+    # Het veld 'Afdeling' in AD
+    # mogelijkheden: "informat" = klascode uit Informat; tekst naar eigen keuze.
+    department="informat"
+
+    # physicalDeliveryOfficeName #
+    # Het veld 'Kantoor' in AD.
+    school_name="" # de afkortingscode van de school zoals die opgenomen moet worden als attribuut van de gegenereerde useraccounts
+
+    # title #
+    # Het veld 'Functie' in AD.
+    role="leerling"
+	
+	[sync_instellingen.klas]
+	# Deze instellingen mapped een klas zoals deze voor
+	# voorbeeld: naam_ou_klas001=naam_klas001_informat
+	#so=naam_klas001_informat
+
+    [sync_instellingen.personeel]
+    # in opbouw
