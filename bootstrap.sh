@@ -56,6 +56,9 @@ sudo apt-get -y install git
 curl -s https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
+# installeer project dependencies met behulp van composer
+composer install -d "/var/www/html/${PROJECTFOLDER}"
+
 # installatie van de ldap module voor php, bron: https://stackoverflow.com/questions/42379108/enable-ldap-module-in-laravel-homestead
 sudo apt-get install php5-ldap
 
