@@ -94,6 +94,7 @@ wachtwoord = ""
 	Enabled = "enabled"
 	ChangePasswordAtLogon = "reset_password"
     Synced = "info"
+	GroupMembership = "group_membership"
 
     [sync_instellingen.leerling]
     # deze instellingen hebben enkel betrekking tot accounts van leerlingen
@@ -101,16 +102,23 @@ wachtwoord = ""
     # department #
     # Het veld 'Afdeling' in AD
     # mogelijkheden: "informat" = klascode uit Informat; tekst naar eigen keuze.
-    department="informat"
+    department = "informat"
 
     # physicalDeliveryOfficeName #
     # Het veld 'Kantoor' in AD.
-    school_name="" # de afkortingscode van de school zoals die opgenomen moet worden als attribuut van de gegenereerde useraccounts
+    school_name = "" # de afkortingscode van de school zoals die opgenomen moet worden als attribuut van de gegenereerde useraccounts
 
     # title #
     # Het veld 'Functie' in AD.
-    role="leerling"
-	
+    role = "leerling"
+		
+		# Voor elke ad groep waaraan je gebruikers wil toekennen, voeg je een array of table toe. Deze moet de naam [[sync_instellingen.leerling.ad_groepen]] dragen.
+		# Elke table bestaat uit 2 properties: group_dn en vestigingscode.
+		# Met group_dn kan je opgeven welke group je ter beschikking wil stellen, en met vestigingscode bepaal je op basis van vestigingsplaatst welke studenten accounts tot de group moeten behoren.
+		[[sync_instellingen.leerling.ad_groepen]]
+		group_dn = ""
+		vestigingscode = ""
+
 	[sync_instellingen.klas]
 	# Deze instellingen mapped een klas zoals deze voor
 	# voorbeeld: naam_ou_klas001=naam_klas001_informat

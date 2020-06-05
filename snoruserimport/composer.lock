@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc3ce138206188e63da5351f2318da58",
+    "content-hash": "61c9ff93745fcc471b54b4c72b7e1da7",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -231,6 +231,55 @@
                 "toml"
             ],
             "time": "2014-02-25T09:21:11+00:00"
+        },
+        {
+            "name": "leonelquinteros/php-toml",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/leonelquinteros/php-toml.git",
+                "reference": "45ac0f9820f40ed153c100eae1669f91bb5fd27b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/leonelquinteros/php-toml/zipball/45ac0f9820f40ed153c100eae1669f91bb5fd27b",
+                "reference": "45ac0f9820f40ed153c100eae1669f91bb5fd27b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src/Toml.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause-Clear"
+            ],
+            "authors": [
+                {
+                    "name": "Leonel Quinteros",
+                    "email": "leonel.quinteros@gmail.com",
+                    "role": "Author"
+                }
+            ],
+            "description": "PHP parser for TOML language ( https://github.com/toml-lang/toml )",
+            "homepage": "http://github.com/leonelquinteros/php-toml",
+            "keywords": [
+                "class",
+                "leonelquinteros",
+                "lib",
+                "library",
+                "mojombo",
+                "package",
+                "parser",
+                "php",
+                "toml"
+            ],
+            "time": "2019-07-10T21:19:06+00:00"
         },
         {
             "name": "psr/http-message",

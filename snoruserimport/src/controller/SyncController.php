@@ -221,17 +221,6 @@ class SyncController
             //if ($wisaStudent->getEstablishmentCode() == 'Station6') {// && fnmatch("7*", $wisaStudent->getClassCode())) {
             echo $wisaStudent->getWisaId() . ',' . $wisaStudent->getFirstName() . ',' . $wisaStudent->getLastName() . ',' . $username . ',' . $displayName . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
             //}
-            $adGroups = array();
-            if ($wisaStudent->getEstablishmentCode() == 'Station6') {
-                $adGroups = array('CN=Leerlingen,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                    'CN=leerlingen_SO,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                    'CN=wifi_leerlingen,OU=securitygroups,OU=duffel,DC=snor,DC=lok');
-            }
-            if ($wisaStudent->getEstablishmentCode() == 'Rooien23') {
-                $adGroups = array('CN=Leerlingen,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                    'CN=studenten_HBO5,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                    'CN=wifi_studenten,OU=securitygroups,OU=duffel,DC=snor,DC=lok');
-            }
 
             if ($_GET['sync_report'])
                 $wamUser = new \Snor\UserImport\Bll\WamUser();
@@ -249,6 +238,12 @@ class SyncController
             $wamUser->setSchoolName('SNOR');
             $wamUser->setUserPrincipalName($username . '@student.snorduffel.be');
 
+            $availableGroups = $this->config['sync_instellingen']['leerling']['ad_groepen'];
+            foreach ($availableGroups as $groupObj) {
+                if ($wisaStudent->getEstablishmentCode() == $groupObj['vestigingscode']) {
+                    $wamUser->addGroupMembership($groupObj['group_dn']);
+                }
+            }
             //test
             //echo $wamUser->getAdministrativeId() . ',' . $wamUser->getFirstName() . ',' . $wamUser->getLastName() . ',' . $wamUser->getEmailAddress() . ',' . mb_detect_encoding($wamUser->getEmailAddress()).'<br>';
             $wamUsers[] = $wamUser;

@@ -37,7 +37,17 @@ class WamImport
          * deze check test of de input al dan niet UTF-8 geëncodeerd is. Als dat NIET het geval is dan zal er een convertie naar UTF-8 plaats vinden.
          * Bron: https://github.com/jdorn/php-reports/issues/100
          * Door deze aanpassing werkt de json_encode functie met de return data van deze functie en kan er via de WamConnector klasse een verzending via HTTP gebeuren zonder gegevensvervuiling.
+         * Aanpassing 05-06-2020: Om ondersteuning te geven aan arrays, moest de functie aangepast worden. Vóór deze aanpassing werd er enkel ene actie uitgevoerd op value's van het type string.
+         * Om strings die opgeslagen zijn in arrays te ondersteunen, moest er if toegevoegd wordne dat nakijkt of het om een array gaat. Indien dat het geval is, dan wordt de array geitereerd en
+         * de functie recursief uitgevoerd op elk item dat zich voor doet.
         */
+        if(gettype($value) === 'array') {
+            $array = array();
+            for ($i = 0; $i < count($value); $i++) {
+                $array[] = $this->sanitizeString($value[$i]);
+            }
+            return $array;
+        }
         if(gettype($value) === 'string') {
             if ( false === mb_check_encoding($value, 'UTF-8') ) return $value = utf8_encode($value);
             else return $value;

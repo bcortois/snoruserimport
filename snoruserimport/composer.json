@@ -3,8 +3,8 @@
     "description": "//",
     "type": "project",
     "require": {
-        "jamesmoss/toml": "dev-master",
-		"guzzlehttp/guzzle": "~6.0"
+		"guzzlehttp/guzzle": "~6.0",
+        "leonelquinteros/php-toml": "^1.1"
     },
 	
     "autoload": {

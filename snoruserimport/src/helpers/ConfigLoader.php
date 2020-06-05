@@ -35,7 +35,18 @@ class ConfigLoader
     }
 
     private function importToml($configFilePath) {
-        $this->setConfigContent(\Toml\Parser::fromFile($configFilePath));
+    /**
+     * Deze functie bevat de nodige koppeling met de Toml library die de parsing van Toml markup naar php primitives voorziet.
+     */
+
+        // parsing met jamesmoss/toml library. Deze ondersteund het niet op hashtables te definieren in de markup, daarom werd deze vervangen en op non-actief geplaatst.
+        //$this->setConfigContent(\Toml::parseFile($configFilePath));
+
+        // parsing met leonelquinteros/php-toml library. Deze geeft wel ondersteuning voor hashtables in de markup en is als vervanging van de jamesmoss/toml parser ingezet.
+        // deze parser retourneerd een object. Aangezien de configContent property van deze klasse als array wordt aanzien in de applicatie, dient heir ene convertie te gebeuren van obj naar array.
+        $contentObj = \Toml::parseFile($configFilePath);
+        $array = json_decode(json_encode($contentObj), true);
+        $this->setConfigContent($array);
     }
 
     /**

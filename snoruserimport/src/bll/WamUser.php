@@ -24,6 +24,18 @@ class WamUser
     private $path;
     private $enabled;
     private $changePasswordAtLogon;
+    // array met de DN('s) van de group(en) waar de gebruiker lid van is.
+    private $groupMembership;
+
+    /**
+     * WamUser constructor.
+     * @param $groupMembership
+     */
+    public function __construct()
+    {
+        $this->groupMembership = array();
+    }
+
 
     /**
      * @return mixed
@@ -232,6 +244,24 @@ class WamUser
     {
         $this->changePasswordAtLogon = $changePasswordAtLogon;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupMembership()
+    {
+        return $this->groupMembership;
+    }
+
+    /**
+     * @param mixed $groupMembership
+     */
+    public function addGroupMembership($groupMembership)
+    {
+        $this->groupMembership[] = $groupMembership;
+    }
+
+
 
     public function callGetMethodByName($methodName) {
         $method = 'get' . $methodName;
