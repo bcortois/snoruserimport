@@ -112,6 +112,14 @@ wachtwoord = ""
     # Het veld 'Functie' in AD.
     role = "leerling"
 		
+	# change_password_at_logon #
+	# Dit veld bepaald of de nieuw aangemaakt ADusers tijdens de eerste aanmelding een nieuw achtwoord moeten opgeven.
+	change_password_at_logon = true
+	
+	# enable_account #
+	# Dit veld bepaald of de nieuw aangemaakt ADusers ingeschakeld worden.
+	enable_account = true
+	
 		# Voor elke ad groep waaraan je gebruikers wil toekennen, voeg je een array of table toe. Deze moet de naam [[sync_instellingen.leerling.ad_groepen]] dragen.
 		# Elke table bestaat uit 2 properties: group_dn en vestigingscode.
 		# Met group_dn kan je opgeven welke group je ter beschikking wil stellen, en met vestigingscode bepaal je op basis van vestigingsplaatst welke studenten accounts tot de group moeten behoren.

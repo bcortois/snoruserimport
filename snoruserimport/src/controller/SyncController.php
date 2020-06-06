@@ -205,7 +205,6 @@ class SyncController
             $salt = null;
             $username = createUsername($wisaStudent, $salt);
             while ($this->adUserExist($username)) {
-                echo 'jeeeeeep';
                 $salt++;
                 $username = createUsername($wisaStudent,$salt);
             }
@@ -222,23 +221,33 @@ class SyncController
             echo $wisaStudent->getWisaId() . ',' . $wisaStudent->getFirstName() . ',' . $wisaStudent->getLastName() . ',' . $username . ',' . $displayName . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
             //}
 
+            $syncSettingsStudent = $this->config['sync_instellingen']['leerling'];
             if ($_GET['sync_report'])
                 $wamUser = new \Snor\UserImport\Bll\WamUser();
             $wamUser->setAdministrativeId($wisaStudent->getWisaId());
             $wamUser->setDepartment($wisaStudent->getClassCode());
-            $wamUser->setChangePasswordAtLogon(true);
+            if ($syncSettingsStudent['department'] != 'informat') {
+                # Als in de config het veld 'department' niet op 'informat' staat, dan geeft dat aan dat deze wamUser property ingevuld moet worden met de waarde uit de config.
+                $wamUser->setDepartment($syncSettingsStudent['department']);
+            }
+            $wamUser->setChangePasswordAtLogon((bool) $syncSettingsStudent['change_password_at_logon']);
             $wamUser->setFirstName($wisaStudent->getFirstName());
             $wamUser->setDisplayName($wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')');
             $wamUser->setEmailAddress($username . '@student.snorduffel.be');
-            $wamUser->setEnabled('true');
+            $wamUser->setEnabled($syncSettingsStudent['enable_account']);
             $wamUser->setLastName($wisaStudent->getLastName());
-            $wamUser->setPath('OU=test,OU=personen,OU=leerlingen,OU=duffel,DC=snor,DC=lok');
-            $wamUser->setRole('leerling');
+            foreach ($syncSettingsStudent['ou_paths'] as $ouPath) {
+                if ($ouPath['vestigingscode'] === $wisaStudent->getEstablishmentCode()) {
+                    $wamUser->setPath($ouPath['path']);
+                }
+            }
+
+            $wamUser->setRole($syncSettingsStudent['role']);
             $wamUser->setSamAccountName($username);
-            $wamUser->setSchoolName('SNOR');
+            $wamUser->setSchoolName($syncSettingsStudent['school_name']);
             $wamUser->setUserPrincipalName($username . '@student.snorduffel.be');
 
-            $availableGroups = $this->config['sync_instellingen']['leerling']['ad_groepen'];
+            $availableGroups = $syncSettingsStudent['ad_groepen'];
             foreach ($availableGroups as $groupObj) {
                 if ($wisaStudent->getEstablishmentCode() == $groupObj['vestigingscode']) {
                     $wamUser->addGroupMembership($groupObj['group_dn']);

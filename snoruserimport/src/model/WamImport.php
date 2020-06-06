@@ -40,6 +40,9 @@ class WamImport
          * Aanpassing 05-06-2020: Om ondersteuning te geven aan arrays, moest de functie aangepast worden. Vóór deze aanpassing werd er enkel ene actie uitgevoerd op value's van het type string.
          * Om strings die opgeslagen zijn in arrays te ondersteunen, moest er if toegevoegd wordne dat nakijkt of het om een array gaat. Indien dat het geval is, dan wordt de array geitereerd en
          * de functie recursief uitgevoerd op elk item dat zich voor doet.
+         * Aanpassing 06-06-2020: Er werd een bug ondekt bij het sanitizen van booleans of values die als booleans herkent worden. Deze values worden niet teruggegeven door deze functie en "verdwijnen" als het ware.
+         * Hierdoor kwamen boolean properties van de WamUser objecten niet to bij de wam API aan en waren ze als gevolg null. Daarom werd de condities hieronder samen gebracht in een elsif en een default action toegevoegd
+         * zodat values die niet in aanmerking komen voor locale sanitazing gewon as-is teruggestuurd worden.
         */
         if(gettype($value) === 'array') {
             $array = array();
@@ -48,9 +51,13 @@ class WamImport
             }
             return $array;
         }
-        if(gettype($value) === 'string') {
+        elseif(gettype($value) === 'string') {
             if ( false === mb_check_encoding($value, 'UTF-8') ) return $value = utf8_encode($value);
             else return $value;
+        }
+        else {
+            // De value is van een ander type, in dat geval is er geen speciale convertie of iteratie nodig. De value wordt as-is gerouterneerd.
+            return $value;
         }
     }
 
