@@ -120,6 +120,9 @@ wachtwoord = ""
 	# Dit veld bepaald of de nieuw aangemaakt ADusers ingeschakeld worden.
 	enable_account = true
 	
+	# domainname #
+	# Dit veld wordt gebruik om de suffix van de UPN te bepalen. Het domein moet gekend zijn in de lokale AD
+	domainname = ""
 		# Voor elke ad groep waaraan je gebruikers wil toekennen, voeg je een array of table toe. Deze moet de naam [[sync_instellingen.leerling.ad_groepen]] dragen.
 		# Elke table bestaat uit 2 properties: group_dn en vestigingscode.
 		# Met group_dn kan je opgeven welke group je ter beschikking wil stellen, en met vestigingscode bepaal je op basis van vestigingsplaatst welke studenten accounts tot de group moeten behoren.

@@ -20,6 +20,7 @@ echo '<a href="wamsync-changes.php">wam syncer - sync informat ID (test)</a>';
 foreach ($report->getMatches() as $match) {
     if($match->hasMultipleCandidates()) {
         $differenceObj = $match->getDifferenceObj();
+        echo '<h1>Meerdere kandidaten:</h1><br>';
         echo '<br><h2>MATCH</h2>';
         echo '<br><b>Reference</b><br>';
         echo 'id: ' . $match->getReferenceObj()->getWisaId() . ' -- ';
@@ -33,5 +34,20 @@ foreach ($report->getMatches() as $match) {
             echo 'lastname: ' . $differenceObj[$i]->getLastName() . ' -- ';
             echo 'upn: ' . $differenceObj[$i]->getUserPrincipalName() . '<br>';
         }
+    }
+    if(!$match->hasMultipleCandidates()) {
+        $differenceObj = $match->getDifferenceObj();
+        echo '<h1>één op één match: </h1>';
+        echo '<br><h2>MATCH</h2>';
+        echo '<br><b>Reference</b><br>';
+        echo 'id: ' . $match->getReferenceObj()->getWisaId() . ' -- ';
+        echo 'firstname: ' . $match->getReferenceObj()->getFirstName() . ' -- ';
+        echo 'lastname: ' . $match->getReferenceObj()->getLastName() . ' -- ';
+        echo 'birthdate: ' . $match->getReferenceObj()->getBirthDate();
+        echo '<br><b>Matches</b><br>';
+        echo 'id: ' . $differenceObj->getAdministrativeId() . ' -- ';
+        echo 'firstname: ' . $differenceObj->getFirstName() . ' -- ';
+        echo 'lastname: ' . $differenceObj->getLastName() . ' -- ';
+        echo 'upn: ' . $differenceObj->getUserPrincipalName() . '<br>';
     }
 }

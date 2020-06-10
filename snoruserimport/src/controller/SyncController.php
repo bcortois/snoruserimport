@@ -199,6 +199,7 @@ class SyncController
             return replaceSpecialChars($username);
         }
 
+        $syncSettingsStudent = $this->config['sync_instellingen']['leerling'];
         $wamUsers = array();
         $usernameList = Array();
         foreach ($report->getNotInAd() as $wisaStudent) {
@@ -213,7 +214,7 @@ class SyncController
                 $username = createUsername($wisaStudent,$salt);
             }
             $usernameList[] = $username;
-
+            $primarySmtp = $username . '@' . $syncSettingsStudent['domainname'];
             # temp var for displayname
             $displayName = $wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')';
 
@@ -221,7 +222,7 @@ class SyncController
             echo $wisaStudent->getWisaId() . ',' . $wisaStudent->getFirstName() . ',' . $wisaStudent->getLastName() . ',' . $username . ',' . $displayName . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
             //}
 
-            $syncSettingsStudent = $this->config['sync_instellingen']['leerling'];
+
             if ($_GET['sync_report'])
                 $wamUser = new \Snor\UserImport\Bll\WamUser();
             $wamUser->setAdministrativeId($wisaStudent->getWisaId());
@@ -233,7 +234,7 @@ class SyncController
             $wamUser->setChangePasswordAtLogon((bool) $syncSettingsStudent['change_password_at_logon']);
             $wamUser->setFirstName($wisaStudent->getFirstName());
             $wamUser->setDisplayName($wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')');
-            $wamUser->setEmailAddress($username . '@student.snorduffel.be');
+            $wamUser->setEmailAddress($primarySmtp);
             $wamUser->setEnabled($syncSettingsStudent['enable_account']);
             $wamUser->setLastName($wisaStudent->getLastName());
             foreach ($syncSettingsStudent['ou_paths'] as $ouPath) {
@@ -245,7 +246,7 @@ class SyncController
             $wamUser->setRole($syncSettingsStudent['role']);
             $wamUser->setSamAccountName($username);
             $wamUser->setSchoolName($syncSettingsStudent['school_name']);
-            $wamUser->setUserPrincipalName($username . '@student.snorduffel.be');
+            $wamUser->setUserPrincipalName($primarySmtp);
 
             $availableGroups = $syncSettingsStudent['ad_groepen'];
             foreach ($availableGroups as $groupObj) {
