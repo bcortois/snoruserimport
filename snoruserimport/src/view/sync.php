@@ -80,15 +80,15 @@ foreach ($report->getNotInAd() as $wisaStudent) {
     //if ($wisaStudent->getClassName()[0] == '7') {
         echo $wisaStudent->getWisaId() . ',' . $wisaStudent->getFirstName() . ',' . $wisaStudent->getLastName() . ',' . $username . '<br>';
         $adGroups = array();
-        if ($wisaStudent->getEstablishmentCode() == 'Station6') {
-            $adGroups = array('CN=Leerlingen,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                'CN=leerlingen_SO,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                'CN=wifi_leerlingen,OU=securitygroups,OU=duffel,DC=snor,DC=lok');
+        if ($wisaStudent->getEstablishmentCode() == 'establishment1') {
+            $adGroups = array('CN=example,DC=school,DC=be',
+                'CN=example,DC=school,DC=be',
+                'CN=example,DC=school,DC=be');
         }
-        if ($wisaStudent->getEstablishmentCode() == 'Rooien23') {
-            $adGroups = array('CN=Leerlingen,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                'CN=studenten_HBO5,OU=groepen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
-                'CN=wifi_studenten,OU=securitygroups,OU=duffel,DC=snor,DC=lok');
+        if ($wisaStudent->getEstablishmentCode() == 'establishment2') {
+            $adGroups = array('CN=example,DC=school,DC=be',
+                'CN=example,DC=school,DC=be',
+                'CN=example,DC=school,DC=be');
         }
 
         if ($_GET['sync_report'])
@@ -98,7 +98,7 @@ foreach ($report->getNotInAd() as $wisaStudent) {
         $adUser->setLastName($wisaStudent->getLastName());
         $adUser->setAdministrativeId($wisaStudent->getWisaId());
         $adUser->setOfficialAddress($wisaStudent->getOfficialAddress());
-        $adUser->setUserPrincipalName($username . '@student.snorduffel.be');
+        $adUser->setUserPrincipalName($username . '@school.be');
     //}
     if($controller->addUser($adUser,$adGroups)) {
     }
@@ -112,7 +112,7 @@ foreach ($report->getNotInAd() as $wisaStudent) {
 echo $report->getNotInAdCount();
 
 $attr = Array();
-$attr['mail'][] = $matchArr[0][0]->getFirstName().'.'.$matchArr[0][0]->getLastName().'@student.snorduffel.be';
+$attr['mail'][] = $matchArr[0][0]->getFirstName().'.'.$matchArr[0][0]->getLastName().'@school.be';
 $attr['employeeid'] = $matchArr[0][0]->getWisaId();
 $dn = $matchArr[0][1]['dn'];
 

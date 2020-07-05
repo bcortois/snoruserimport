@@ -25,7 +25,6 @@ class SyncController
     }
 
     public function studentsToAd($report) {
-        // Om de verwijder-functie goed te laten werken moet je de $adConnectorInfo aanpassen naar 'OU=so,OU=personen,OU=leerlingen,OU=duffel,DC=snor,DC=lok'.
 
         $adSettings = $this->config['active_directory']['snor'];
         $adFilter = $this->config['active_directory']['snor']['filter'];
@@ -68,7 +67,7 @@ class SyncController
 
         $adConnectorInfo = new \Snor\UserImport\Dal\AdConnectorInfo();
         $adConnectorInfo->setSearchScope(
-            'OU=personen,OU=leerlingen,OU=duffel,DC=snor,DC=lok',
+            '',
             '(cn=*)',
             array('userprincipalname','givenname','sn','givenname','displayname','mail','name','1','telephonenumber','memberof','employeeid'));
 
@@ -144,7 +143,7 @@ class SyncController
         // als dat niet het geval is blijft het mailadres veld leeg.
                 /*$firstNameWithoutSpaces = str_replace(' ', '', $match->getReferenceObj()->getFirstName());
                 $lastNameWithoutSpaces = str_replace(' ', '', $match->getReferenceObj()->getLastName());
-                $emailAddress = $firstNameWithoutSpaces.'.'.$lastNameWithoutSpaces.'@student.snorduffel.be';
+                $emailAddress = $firstNameWithoutSpaces.'.'.$lastNameWithoutSpaces.'@school.be';
                 if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
                     $emailAddressToLowerCase = strtolower($emailAddress);
                     if($match->getDifferenceObj()->getEmailAddress() != $emailAddressToLowerCase) {
@@ -158,7 +157,7 @@ class SyncController
         // Deze functie houdt tijdens het aanmaken van een e-mailadres voor studenten rekening met speciale karakters in de voor-en achternaam en zorgt ervoor dat deze niet in het mailadres voorkomen.
         // NOTE 28/08: Deze lijkt niet nodig aangezien je a.d.h.v. de username het emailadres kan (moet) opmaken (In geval van werking snor).
         function createEmailAddress($username) {
-            $emailAddress = $username.'@student.snorduffel.be';
+            $emailAddress = $username.'@school.be';
             $emailAddressToLowerCase = strtolower($emailAddress);
             //$options = array('flags' => FILTER_FLAG_EMAIL_UNICODE);
             return filter_var($emailAddressToLowerCase, FILTER_VALIDATE_EMAIL, FILTER_FLAG_EMAIL_UNICODE);

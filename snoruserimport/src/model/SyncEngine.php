@@ -29,7 +29,7 @@ class SyncEngine
     public function wisaToAd($report) {
         /**
          * DEPRACTED
-         * 26/05/2020: Deze functie was al enige tijd niet meer in gebruik. Er zijn hier en daar nog verijzingen naar deze code.
+         * 26/05/2020: Deze functie was al enige tijd niet meer in gebruik. Er zijn hier en daar nog verwijzingen naar deze code.
          * Er werkden enkele values verwijderd omwille van security issues. Deze functie staat hier louter informatief voor het geval er nog referenties gevonden worden.
          **/
         //$adImport = new \Snor\UserImport\Model\AdImport($adConnectorInfo);

@@ -122,12 +122,12 @@ class AdImport
                     $attributes['streetAddress'] = $adUser->getOfficialAddress()->getStreetName() . ' ' . $adUser->getOfficialAddress()->getStreetNumber();
                 }
             }
-            $attributes['mail'] = $commonName . '@student.snorduffel.be';
+            $attributes['mail'] = $commonName . '@school.be';
             $attributes['employeeid'] = $adUser->getAdministrativeId();
-            $attributes['distinguishedName'] = 'cn='.$commonName.',ou=test,ou=personen,ou=leerlingen,ou=duffel,dc=snor,dc=lok';
+            $attributes['distinguishedName'] = 'cn='.$commonName.',ou=example,dc=school,dc=be';
             // This attribute is used to enable or disable an account, default the account is disabled so we will need to change the default value of 546 to 512
             //$attributes['userAccountControl'] = 512;
-            $attributes['userPassword'] = "{SHA}" . base64_encode( pack( "H*", sha1( 'Duffel2570' ) ) );
+            $attributes['userPassword'] = "{SHA}" . base64_encode( pack( "H*", sha1( 'examplepassword' ) ) );
 
             // de attributen hieronder zijn vereist om de functie te laten werken.
             $attributes["objectclass"][0] = "top";
@@ -149,7 +149,7 @@ class AdImport
             $commonName = substr($adUser->getUserPrincipalName(),0,($i));
 
             $attributes = array();
-            $attributes['member'] = 'CN='.$commonName.',OU=test,OU=personen,OU=leerlingen,OU=duffel,DC=snor,DC=lok';
+            $attributes['member'] = 'CN='.$commonName.',ou=example,dc=school,dc=be';
             $success = $this->dataStore->addToGroup($adGroupDn, $attributes);
         }
         $this->dataStore->disconnect();

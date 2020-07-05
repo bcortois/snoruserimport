@@ -18,7 +18,7 @@ class AdUsers
      **/
     public function fetch() {
         $model = new \Snor\UserImport\Model\AdImport();
-        $dn = 'OU=personen,OU=leerlingen,OU=duffel,DC=snor,DC=lok';
+        $dn = '';
         $filter =  '(cn=*)';
         $attributes = array('userprincipalname', 'givenname', 'sn', 'givenname', 'displayname', 'mail', 'name', '1', 'telephonenumber', 'memberof', 'employeeid');
 
