@@ -31,8 +31,8 @@
             $controller->StudentsHboToAd($report);
         }
     }*/
-    echo '<a href="sync.php?sync_report='.getRequestParamValue('sync_report').'">Voer gebrukers toe aan active directory</a>';
-    echo '<a href="wamsync.php?sync_report='.getRequestParamValue('sync_report').'">wam syncer (test)</a>';
+    // 2020-07-05 DEPRECATED echo '<a href="sync.php?sync_report='.getRequestParamValue('sync_report').'">Voer gebrukers toe aan active directory</a>';
+    echo '<a href="wamsync.php?sync_report='.getRequestParamValue('sync_report').'">wam sync - klik hier om de onderstaande gebruikers toe te voegen</a>';
     switch(getRequestParamValue('sync_report')) {
         case 'sec' : if ($report->getNotInAdCount() > 0) {
             foreach ($report->getNotInAd() as $wisaUser) {
