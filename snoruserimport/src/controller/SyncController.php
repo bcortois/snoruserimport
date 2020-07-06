@@ -26,8 +26,8 @@ class SyncController
 
     public function studentsToAd($report) {
 
-        $adSettings = $this->config['active_directory']['snor'];
-        $adFilter = $this->config['active_directory']['snor']['filter'];
+        $adSettings = $this->config['active_directory'];
+        $adFilter = $this->config['active_directory']['filter'];
         $adConnectorInfo = new \Snor\UserImport\Dal\AdConnectorInfo($adSettings['dc'],$adSettings['user_dn'],$adSettings['wachtwoord']);
         $adConnectorInfo->setSearchScope(
             $adFilter['leerlingen_base_dn'],
@@ -78,8 +78,8 @@ class SyncController
     }
 
     public function adUserExist($samAccountName) {
-        $adSettings = $this->config['active_directory']['snor'];
-        $adFilter = $this->config['active_directory']['snor']['filter'];
+        $adSettings = $this->config['active_directory'];
+        $adFilter = $this->config['active_directory']['filter'];
         $adConnectorInfo = new \Snor\UserImport\Dal\AdConnectorInfo($adSettings['dc'],$adSettings['user_dn'],$adSettings['wachtwoord']);
         $adConnectorInfo->setSearchScope(
             $adFilter['leerlingen_base_dn'],

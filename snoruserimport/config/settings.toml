@@ -30,12 +30,12 @@ base_uri = "https://webservice.informatsoftware.be/wsInformat.asmx"
 	
 [active_directory]
 
-    [active_directory.snor]
+    [active_directory]
     dc = "" # Het ip-adres van de AD DC server
     user_dn = "" # De distinguishedName van een gebruiker om ldapqueries uit te voeren op de AD DC server
     wachtwoord = "" # het wachtwoord van de gebruiker
 
-        [active_directory.snor.filter]
+        [active_directory.filter]
         # leerlingen_base_dn #
         # het dn pad naar de ou waar de leerlingenaccounts opgeslagen worden. Alle sub- OU's worden mee in rekening genomen.
         leerlingen_base_dn = ""

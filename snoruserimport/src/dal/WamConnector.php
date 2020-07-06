@@ -42,8 +42,8 @@ class WamConnector
     public function getRequestParams() {
         //The data you want to send via POST
         $fields = [
-            'username'      => $this->config['active_directory']['snor']['user_dn'],
-            'paswoord' => $this->config['active_directory']['snor']['wachtwoord'],
+            'username'      => $this->config['active_directory']['user_dn'],
+            'paswoord' => $this->config['active_directory']['wachtwoord'],
             'schooljaar'         => $this->apiConnectionInfo->getSchoolyear(),
             'instelnr'         => $this->apiConnectionInfo->getInstitutionNumber(),
             'referentiedatum'         => $this->apiConnectionInfo->getReferenceDate(),
