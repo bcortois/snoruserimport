@@ -27,23 +27,21 @@ base_uri = "https://webservice.informatsoftware.be/wsInformat.asmx"
 	# informat.resource_uri
 	# Deze subsectie bevat de url's van de verschillende Informat webservices.
 	get_students = "/Lln" # Default: /Lln
-	
+
 [active_directory]
+dc = "" # Het ip-adres van de AD DC server
+user_dn = "" # De distinguishedName van een gebruiker om ldapqueries uit te voeren op de AD DC server
+wachtwoord = "" # het wachtwoord van de gebruiker
 
-    [active_directory]
-    dc = "" # Het ip-adres van de AD DC server
-    user_dn = "" # De distinguishedName van een gebruiker om ldapqueries uit te voeren op de AD DC server
-    wachtwoord = "" # het wachtwoord van de gebruiker
+	[active_directory.filter]
+	# leerlingen_base_dn #
+	# het dn pad naar de ou waar de leerlingenaccounts opgeslagen worden. Alle sub- OU's worden mee in rekening genomen.
+	leerlingen_base_dn = ""
 
-        [active_directory.filter]
-        # leerlingen_base_dn #
-        # het dn pad naar de ou waar de leerlingenaccounts opgeslagen worden. Alle sub- OU's worden mee in rekening genomen.
-        leerlingen_base_dn = ""
-
-        # object_attributes #
-        # Geef aan welke attributen gebruikt moeten worden bij de sync
-        # NIET AANPASSEN
-        object_attributen = ["userprincipalname","givenname","sn","displayname","mail","name","1","telephonenumber","memberof","employeeid","info","department","physicalDeliveryOfficeName","title"]
+	# object_attributes #
+	# Geef aan welke attributen gebruikt moeten worden bij de sync
+	# NIET AANPASSEN
+	object_attributen = ["userprincipalname","givenname","sn","displayname","mail","name","1","telephonenumber","memberof","employeeid","info","department","physicalDeliveryOfficeName","title"]
 
 [wam_api]
 # wam_api #
