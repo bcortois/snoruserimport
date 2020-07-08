@@ -44,7 +44,7 @@ class SyncEngine
 
         ////
 
-        // onderstaande is een fix om ook klassen van het 7e jaar BSO op te nemen in SO, deze komen uit de wisa resultaten van de HBO5
+        // onderstaande is een fix om ook klassen van het 7e jaar BSO op te nemen in SO.
         // deze fix is enkel te gebruiken voor het verwijderen van usersNotAttendingSchool uit AD
         // tijdelijk fix!!! geen goed design
 

@@ -63,7 +63,7 @@ class SyncController
          * 26/05/2020: Deze code was al enige tijd niet meer in gebruik.
          * De params van de AdConnectorInfo en WisaConnectorInfo constructor werden verwijderd omwille van security issues. Deze functie staat hier louter informatief voor het geval er nog referenties gevonden worden.
          **/
-        // Om de verwijder-functie goed te laten werken moet je de $adConnectorInfo aanpassen naar 'OU=hbo5,OU=personen,OU=leerlingen,OU=duffel,DC=snor,DC=lok'.
+        // Om de verwijder-functie goed te laten werken moet je de $adConnectorInfo aanpassen.
 
         $adConnectorInfo = new \Snor\UserImport\Dal\AdConnectorInfo();
         $adConnectorInfo->setSearchScope(
