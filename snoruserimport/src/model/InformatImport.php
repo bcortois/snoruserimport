@@ -14,11 +14,13 @@ class InformatImport
     private $dataStore;
     private $result;
     private $informatConnectionInfo;
+    private $config;
 
-    public function __construct($informatConnectionInfo)
+    public function __construct($informatConnectionInfo, $config)
     {
         $this->informatConnectionInfo = $informatConnectionInfo;
         $this->result = Array();
+        $this->config = $config;
     }
 
     private function initDal($connector) {
@@ -72,6 +74,28 @@ class InformatImport
                     echo mb_detect_encoding($row['afdcode']).' '.$row['afdcode'].', ';
                     echo mb_detect_encoding($row['Klasnr']).' '.$row['Klasnr'].', ';
                     echo mb_detect_encoding($row['vestcode']).' '.$row['vestcode'].'<br><br>';*/
+
+                    // Evolutie 29-08-2020: De filters die hieronder uit de config gehaald worden zijn key value types.
+                    // elke key representeerd de naam van een attribuut van een leerlingobject dat vanuit Informat word binnengehaald. De value dat aan deze key
+                    // is toegewezen kan een string of array zijn. Deze values geven aan welke waardes de overeenstemmende attributen van het Informat object mogen hebben om opgenomen te worden in de result array.
+                    // Dit is kan dus de status van de inschrijving zijn ect..
+                    $filters = $this->config['informat']['filters'];
+                    foreach ($filters as $key => $filter) {
+                        if(gettype($filter) === 'array') {
+                            for ($i = 0; $i < count($filter); $i++) {
+                                if ($row[$key] == $filter[$i]) {
+                                    continue 2;
+                                }
+                            }
+                            continue 2;
+                        }
+                        else {
+                            if ($row[$key] == $filter) {
+                                continue;
+                            }
+                            continue 2;
+                        }
+                    }
 
                     $student = new \Snor\UserImport\Bll\Student();
                     $student->setWisaId($row['p_persoon']);

@@ -27,6 +27,15 @@ base_uri = "https://webservice.informatsoftware.be/wsInformat.asmx"
 	# informat.resource_uri
 	# Deze subsectie bevat de url's van de verschillende Informat webservices.
 	get_students = "/Lln" # Default: /Lln
+	
+	[informat.filters]
+	# informat.filters #
+	# Deze subsectie definieerd criteria waaraan atributen van leerling-objecten die binnenkomen vanuit Informat moet aan voldoen.
+	
+	# voorloping #
+	# objecten waarvan de waarde van het attribuut genaamd 'voorlopig' gelijk is aan één van de codes die in onderstaande array staan, worden opgenomen door de applicatie om accounts voor te genereren.
+	# mogelijk codes: '0' == Gerealiseerd; '4' == Aanmelding; ...
+	voorlopig = "0" # De waarde mag een array zijn bv. ["0,4"], maar mag evengoed een enkele string zijn bv. "0".
 
 [active_directory]
 dc = "" # Het ip-adres van de AD DC server
