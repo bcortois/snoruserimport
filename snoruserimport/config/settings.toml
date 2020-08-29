@@ -127,7 +127,16 @@ wachtwoord = ""
 		[[sync_instellingen.leerling.ad_groepen]]
 		group_dn = ""
 		vestigingscode = ""
-
+		
+		# Onderstaande array of tables maakt het mogelijk om de AdAccounts voor leerlingen op te delen onder OU's gebasseerd op de vestigingsplaatst zoals die in Informat staat gedefineerd.
+		[[sync_instellingen.leerling.ou_paths]]
+		path = ""
+		vestigingscode = ""
+		# Als er geen OU gevonden wordt op basis van vestigingscodes gedefineerd in [[sync_instellingen.leerling.ou_paths]], dan zal de path var uit onderstaande array gebruikt worden om te bepalen waar de AdAccounts aangemaakt worden.
+		# Vul hier dus best een ou in om fouten te voorkomen.
+		[sync_instellingen.leerling.ou_paths_default]
+		path = ""
+	
 	[sync_instellingen.klas]
 	# Deze instellingen mapped een klas zoals deze voor
 	# voorbeeld: naam_ou_klas001=naam_klas001_informat

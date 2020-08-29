@@ -236,10 +236,20 @@ class SyncController
             $wamUser->setEmailAddress($primarySmtp);
             $wamUser->setEnabled($syncSettingsStudent['enable_account']);
             $wamUser->setLastName($wisaStudent->getLastName());
+
+            // Bugfix 28-08-2020: Het kan voorvallen dat de data uit Informat een niet voorspelbare vestigingscode heeft, het gaat dan meetal om een menselijke fout.
+            // Deze anomaliteiten gaf problemen voor onderstaande code omdat deze enkel rekening hield met de vestigingscodes die beschreven staan in de config.
+            // Als fix werd er een "default" waarde toegevoegd in de config voor alle vestigingscodes die niet in de config staan beschreven.
+            // hieronder werd de code aangepast om te werken met deze default of fallback waarde.
+            $pathRecognized = false;
             foreach ($syncSettingsStudent['ou_paths'] as $ouPath) {
                 if ($ouPath['vestigingscode'] === $wisaStudent->getEstablishmentCode()) {
                     $wamUser->setPath($ouPath['path']);
+                    $pathRecognized = true;
                 }
+            }
+            if (!$pathRecognized) {
+                $wamUser->setPath($syncSettingsStudent['ou_paths_default']['path']);
             }
 
             $wamUser->setRole($syncSettingsStudent['role']);
