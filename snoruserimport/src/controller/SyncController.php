@@ -173,26 +173,18 @@ class SyncController
         }
 
         function createUsername($wisaStudent,$salt) {
-            // onderstaande code slaagt de eerste letter op van de voornaam en de achternaam, door gebruik van mb_str zijn multibyte chars ondersteund en is het mogelijke een encoding te specifiëren zodat
-            // namen met accenten ook werken door utf-8 als encoding op te geven.
-            $charF = mb_substr($wisaStudent->getFirstName(),0,1, 'UTF-8');
-            $charL = mb_substr($wisaStudent->getLastName(),0,1, 'UTF-8');
-            // onderstaande code haalt de dag van de maand en de maand uit de datum van het Student obj.
-            $birthDay = getBirthDay($wisaStudent->getBirthDate());
-            $birthMonth = getBirthMonth($wisaStudent->getBirthDate());
+            $firstName = $wisaStudent->getFirstName();
+            $lastName = $wisaStudent->getLastName();
+            $username = "$firstName.$lastName";
             if ($salt) {
-                //als $salt de waarde true bevat dan zal de nummer van de maand verhoogt worden met 1
-                $birthMonth+=$salt;
+                // De var salt bepaalt of er een cijfer achter de gebruiksnaam moet komen om dubbels te voorkomen.
+                // Indien $salt een waarde werd toegekend, dan zal deze waarde nogmaals vehoogt worden met 1 zodat de gebruikersnaam van de eerste dubbel begint met 2 i.p.v. 1.
+                // naarmate er meer dubbels wordne ontdekt voor dezelfde gebruikernaam, blijft de salt var verhogen.
+                $salt++;
+                $username = $username . $salt;
             }
-            //onderstaande code lijmt de hierboven gevormde strings aan elkaar.
-            //De functie strtolower zorgt ervoor dat er geen hoofdletter aanwezig zijn.
-            //De str_pad zorgt ervoor dat, in geval de dag of de maand maar uit 1 cijfer bestaand, er een nul voor wordt geplaatst. (bv. 09 ipv 9)
             // mb_strtolower houdt rekening met encoding zodat ook karakters met accenten naar lowercase geconverteerd kunnen worden.
-            $username = mb_strtolower($charL.$charF.str_pad($birthDay,2,'0',STR_PAD_LEFT).str_pad($birthMonth,2,'0',STR_PAD_LEFT), 'UTF-8');
-            // met de iconv functie worden speciale accenten van de voor-/achternaam uit de gebruikernaam gehaald.
-            //return preg_replace("/&([a-z])[a-z]+;/i", "$1", $username);
-            //return slugify($username);
-            //return iconv('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $username);
+            $username = mb_strtolower($username, 'UTF-8');
 
             //de replace functie zoekt karakter met een accent uit de gebruikersnaam en vervangt ze met hetzelfde karakter zonder accent.
             return replaceSpecialChars($username);
@@ -214,8 +206,6 @@ class SyncController
             }
             $usernameList[] = $username;
             $primarySmtp = $username . '@' . $syncSettingsStudent['domainname'];
-            # temp var for displayname
-            //$displayName = $wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')';
 
             if ($_GET['sync_report'])
                 $wamUser = new \Snor\UserImport\Bll\WamUser();
