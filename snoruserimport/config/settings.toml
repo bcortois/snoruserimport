@@ -113,12 +113,12 @@ wachtwoord = ""
 
     # physicalDeliveryOfficeName #
     # Het veld 'Kantoor' in AD.
-    school_name = "" # de afkortingscode van de school zoals die opgenomen moet worden als attribuut van de gegenereerde useraccounts
+    school_name = "" # de gestandaardiseerde schoolnaam zoals die opgenomen moet worden als attribuut en toegevoegd word aan de weergavenaam van de gegenereerde useraccounts
 
     # title #
     # Het veld 'Functie' in AD.
     role = "leerling"
-		
+
 	# change_password_at_logon #
 	# Dit veld bepaald of de nieuw aangemaakt ADusers tijdens de eerste aanmelding een nieuw achtwoord moeten opgeven.
 	change_password_at_logon = true

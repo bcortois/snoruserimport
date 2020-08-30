@@ -215,12 +215,7 @@ class SyncController
             $usernameList[] = $username;
             $primarySmtp = $username . '@' . $syncSettingsStudent['domainname'];
             # temp var for displayname
-            $displayName = $wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')';
-
-            //if ($wisaStudent->getEstablishmentCode() == 'Station6') {// && fnmatch("7*", $wisaStudent->getClassCode())) {
-            echo $wisaStudent->getWisaId() . ',' . $wisaStudent->getFirstName() . ',' . $wisaStudent->getLastName() . ',' . $username . ',' . $displayName . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
-            //}
-
+            //$displayName = $wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')';
 
             if ($_GET['sync_report'])
                 $wamUser = new \Snor\UserImport\Bll\WamUser();
@@ -232,7 +227,7 @@ class SyncController
             }
             $wamUser->setChangePasswordAtLogon((bool) $syncSettingsStudent['change_password_at_logon']);
             $wamUser->setFirstName($wisaStudent->getFirstName());
-            $wamUser->setDisplayName($wisaStudent->getLastName() . '_' . $wisaStudent->getFirstName() . '_(' . $username . ')');
+            $wamUser->setDisplayName($wisaStudent->getFirstName().' '.$wisaStudent->getLastName().' | '.$syncSettingsStudent['role'].' '.$syncSettingsStudent['school_name']);
             $wamUser->setEmailAddress($primarySmtp);
             $wamUser->setEnabled($syncSettingsStudent['enable_account']);
             $wamUser->setLastName($wisaStudent->getLastName());
@@ -265,6 +260,8 @@ class SyncController
             }
             //test
             //echo $wamUser->getAdministrativeId() . ',' . $wamUser->getFirstName() . ',' . $wamUser->getLastName() . ',' . $wamUser->getEmailAddress() . ',' . mb_detect_encoding($wamUser->getEmailAddress()).'<br>';
+            echo $wamUser->getAdministrativeId() . ',' . $wamUser->getFirstName() . ',' . $wamUser->getLastName() . ',' . $username . ',' . $wamUser->getDisplayName() . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
+
             $wamUsers[] = $wamUser;
 
 
