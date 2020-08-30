@@ -173,8 +173,8 @@ class SyncController
         }
 
         function createUsername($wisaStudent,$salt) {
-            $firstName = $wisaStudent->getFirstName();
-            $lastName = $wisaStudent->getLastName();
+            $firstName = str_replace(' ', '', $wisaStudent->getFirstName());
+            $lastName = str_replace(' ', '', $wisaStudent->getLastName());
             $username = "$firstName.$lastName";
             if ($salt) {
                 // De var salt bepaalt of er een cijfer achter de gebruiksnaam moet komen om dubbels te voorkomen.
