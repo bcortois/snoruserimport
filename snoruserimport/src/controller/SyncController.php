@@ -172,9 +172,41 @@ class SyncController
             return strtr($string,$replacements );
         }
 
-        function createUsername($wisaStudent,$salt) {
-            $firstName = str_replace(' ', '', $wisaStudent->getFirstName());
-            $lastName = str_replace(' ', '', $wisaStudent->getLastName());
+        function createUsername($wisaStudent, $salt, $trimLevel) {
+			$firstName = $wisaStudent->getFirstName();
+			$lastName = $wisaStudent->getLastName();
+
+            /* Bugfix 30/08/2020
+            Met onderstaande conditieblokken wordt er voorkomen dat de gegenereerde username te lang is voor de SamAccountName limieten van AD.
+            Aan het einde van de functie create Username wordt gecheckt of de lengte van de username niet groter is dan 20 karakters.
+            Als dat wel het geval is wordt de functie opnieuw uitgevoerd (recursief) met een trimlevel van 1.
+            Voor elke poging van de createUsername functie waarbij de username nog steeds te lang is, wordt het trimlevel verhoogt tot dat het opgelost is.
+            Opgelet: Momenteel houdt de code enkel rekening met een trimlevel van 2. Nadien is er nog geen handeling voorzien.
+            */
+			if ($trimLevel >= 1) {
+                // de positie van de eerste spatie in de voornaam wordt bepaald.
+				$indexOfWhiteSpace = mb_strpos($firstName,' ', null, 'UTF-8');
+				if($indexOfWhiteSpace) {
+                    // indien er een positie van een spatie ind e voornaam gevonden werd (er zit dus een spatie in de voornaam), zal enkel het eerste deel van de voornaam gebruikt worden voor de username (trim).
+					$firstName = mb_substr($firstName, 0, $indexOfWhiteSpace, 'UTF-8');
+				}
+				else {
+                    // Als er geen spatie in de voornaam zit, kan er neit getrimmed worden en moet er overgegaan worden naar trimLevel 2.
+					$trimLevel++;
+				}
+				if ($trimLevel >= 2) {
+                    // in trimLevel 2 wordt de achternaam verdeeld door het op te splitsen vanaf er een spatie in zit.
+					$lastNameParts = explode(' ', $lastName);
+					$lastName = '';
+                    // er wordt over elk apart deel van de achternaam geloopt de eerste letter van dat deel wordt toegevoegd aan een nieuw string.
+                    // aan het einde bekom je een string van alle eerste letters van elk deel van de achternaam. Deze string zal gebruikt worden in de username i.p.v. de volledig achternaam.
+					foreach ($lastNameParts as $part) {
+						$lastName = $lastName . mb_substr($part, 0, 1, 'UTF-8');
+					}
+				}
+			}
+            $firstName = str_replace(' ', '', $firstName);
+            $lastName = str_replace(' ', '', $lastName);
             $username = "$firstName.$lastName";
             if ($salt) {
                 // De var salt bepaalt of er een cijfer achter de gebruiksnaam moet komen om dubbels te voorkomen.
@@ -187,7 +219,13 @@ class SyncController
             $username = mb_strtolower($username, 'UTF-8');
 
             //de replace functie zoekt karakter met een accent uit de gebruikersnaam en vervangt ze met hetzelfde karakter zonder accent.
-            return replaceSpecialChars($username);
+            $username = replaceSpecialChars($username);
+			
+			if (strlen($username) > 20) {
+				$trimLevel++;
+				$username = createUsername($wisaStudent, false, $trimLevel);
+			}
+            return $username;
         }
 
         $syncSettingsStudent = $this->config['sync_instellingen']['leerling'];
@@ -195,14 +233,14 @@ class SyncController
         $usernameList = Array();
         foreach ($report->getNotInAd() as $wisaStudent) {
             $salt = null;
-            $username = createUsername($wisaStudent, $salt);
+            $username = createUsername($wisaStudent, $salt, null);
             while ($this->adUserExist($username)) {
                 $salt++;
-                $username = createUsername($wisaStudent,$salt);
+                $username = createUsername($wisaStudent, $salt, null);
             }
             while (in_array($username,$usernameList)) {
                 $salt++;
-                $username = createUsername($wisaStudent,$salt);
+                $username = createUsername($wisaStudent, $salt, null);
             }
             $usernameList[] = $username;
             $primarySmtp = $username . '@' . $syncSettingsStudent['domainname'];
