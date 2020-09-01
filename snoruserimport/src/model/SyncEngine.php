@@ -324,9 +324,14 @@ class SyncEngine
         $report->setUsersNotAttendingSchool($notAttendingUsers);
     }
 
-    public function adUserExists($samAccountName,$adConnectorInfo) {
+    public function adSamAccountNameExists($samAccountName,$adConnectorInfo) {
         //$adImport = new \Snor\UserImport\Model\AdImport($adConnectorInfo);
-        return $this->adImport->userExists($samAccountName);
+        return $this->adImport->samAccountNameExists($samAccountName);
+    }
+
+    public function adUserPrincipalNameExists($userPrincipalName,$adConnectorInfo) {
+        //$adImport = new \Snor\UserImport\Model\AdImport($adConnectorInfo);
+        return $this->adImport->userPrincipalNameExists($userPrincipalName);
     }
 
     public function addUser($adUser,$adConnectorInfo) {

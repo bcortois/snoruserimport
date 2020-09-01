@@ -77,7 +77,7 @@ class SyncController
         $syncEngine->wisaToAd($report);
     }
 
-    public function adUserExist($samAccountName) {
+    public function adSamAccountNameExist($samAccountName) {
         $adSettings = $this->config['active_directory'];
         $adFilter = $this->config['active_directory']['filter'];
         $adConnectorInfo = new \Snor\UserImport\Dal\AdConnectorInfo($adSettings['dc'],$adSettings['user_dn'],$adSettings['wachtwoord']);
@@ -88,7 +88,21 @@ class SyncController
         );
 
         $syncEngine = new \Snor\UserImport\Model\SyncEngine($adConnectorInfo,null, $this->config);
-        return $syncEngine->adUserExists($samAccountName, $adConnectorInfo);
+        return $syncEngine->adSamAccountNameExists($samAccountName, $adConnectorInfo);
+    }
+
+    public function adUserPrincipalNameExist($userPrincipalName) {
+        $adSettings = $this->config['active_directory'];
+        $adFilter = $this->config['active_directory']['filter'];
+        $adConnectorInfo = new \Snor\UserImport\Dal\AdConnectorInfo($adSettings['dc'],$adSettings['user_dn'],$adSettings['wachtwoord']);
+        $adConnectorInfo->setSearchScope(
+            $adFilter['leerlingen_base_dn'],
+            '(cn=*)',
+            $adFilter['object_attributen']
+        );
+
+        $syncEngine = new \Snor\UserImport\Model\SyncEngine($adConnectorInfo,null, $this->config);
+        return $syncEngine->adUserPrincipalNameExists($userPrincipalName, $adConnectorInfo);
     }
 
     public function addUser($adUser, $adGroups) {
@@ -172,9 +186,30 @@ class SyncController
             return strtr($string,$replacements );
         }
 
-        function createUsername($wisaStudent, $salt, $trimLevel) {
-			$firstName = $wisaStudent->getFirstName();
-			$lastName = $wisaStudent->getLastName();
+        function createUserPrincipalName($wisaStudent, $salt) {
+            $firstName = str_replace(' ', '', $wisaStudent->getFirstName());
+            $lastName = str_replace(' ', '', $wisaStudent->getLastName());
+            $upn = "$firstName.$lastName";
+            if ($salt) {
+                // De var salt bepaalt of er een cijfer achter de gebruiksnaam moet komen om dubbels te voorkomen.
+                // Indien $salt een waarde werd toegekend, dan zal deze waarde nogmaals vehoogt worden met 1 zodat de gebruikersnaam van de eerste dubbel begint met 2 i.p.v. 1.
+                // naarmate er meer dubbels wordne ontdekt voor dezelfde gebruikernaam, blijft de salt var verhogen.
+                $salt++;
+                $upn = $upn . $salt;
+            }
+            // mb_strtolower houdt rekening met encoding zodat ook karakters met accenten naar lowercase geconverteerd kunnen worden.
+            $upn = mb_strtolower($upn, 'UTF-8');
+
+            //de replace functie zoekt karakter met een accent uit de gebruikersnaam en vervangt ze met hetzelfde karakter zonder accent.
+            return replaceSpecialChars($upn);
+        }
+
+
+
+
+        function createSamAccountName($wisaStudent, $salt, $trimLevel) {
+            $firstName = $wisaStudent->getFirstName();
+            $lastName = $wisaStudent->getLastName();
 
             /* Bugfix 30/08/2020
             Met onderstaande conditieblokken wordt er voorkomen dat de gegenereerde username te lang is voor de SamAccountName limieten van AD.
@@ -183,28 +218,28 @@ class SyncController
             Voor elke poging van de createUsername functie waarbij de username nog steeds te lang is, wordt het trimlevel verhoogt tot dat het opgelost is.
             Opgelet: Momenteel houdt de code enkel rekening met een trimlevel van 2. Nadien is er nog geen handeling voorzien.
             */
-			if ($trimLevel >= 1) {
+            if ($trimLevel >= 1) {
                 // de positie van de eerste spatie in de voornaam wordt bepaald.
-				$indexOfWhiteSpace = mb_strpos($firstName,' ', null, 'UTF-8');
-				if($indexOfWhiteSpace) {
+                $indexOfWhiteSpace = mb_strpos($firstName,' ', null, 'UTF-8');
+                if($indexOfWhiteSpace) {
                     // indien er een positie van een spatie ind e voornaam gevonden werd (er zit dus een spatie in de voornaam), zal enkel het eerste deel van de voornaam gebruikt worden voor de username (trim).
-					$firstName = mb_substr($firstName, 0, $indexOfWhiteSpace, 'UTF-8');
-				}
-				else {
+                    $firstName = mb_substr($firstName, 0, $indexOfWhiteSpace, 'UTF-8');
+                }
+                else {
                     // Als er geen spatie in de voornaam zit, kan er neit getrimmed worden en moet er overgegaan worden naar trimLevel 2.
-					$trimLevel++;
-				}
-				if ($trimLevel >= 2) {
+                    $trimLevel++;
+                }
+                if ($trimLevel >= 2) {
                     // in trimLevel 2 wordt de achternaam verdeeld door het op te splitsen vanaf er een spatie in zit.
-					$lastNameParts = explode(' ', $lastName);
-					$lastName = '';
+                    $lastNameParts = explode(' ', $lastName);
+                    $lastName = '';
                     // er wordt over elk apart deel van de achternaam geloopt de eerste letter van dat deel wordt toegevoegd aan een nieuw string.
                     // aan het einde bekom je een string van alle eerste letters van elk deel van de achternaam. Deze string zal gebruikt worden in de username i.p.v. de volledig achternaam.
-					foreach ($lastNameParts as $part) {
-						$lastName = $lastName . mb_substr($part, 0, 1, 'UTF-8');
-					}
-				}
-			}
+                    foreach ($lastNameParts as $part) {
+                        $lastName = $lastName . mb_substr($part, 0, 1, 'UTF-8');
+                    }
+                }
+            }
             $firstName = str_replace(' ', '', $firstName);
             $lastName = str_replace(' ', '', $lastName);
             $username = "$firstName.$lastName";
@@ -220,30 +255,44 @@ class SyncController
 
             //de replace functie zoekt karakter met een accent uit de gebruikersnaam en vervangt ze met hetzelfde karakter zonder accent.
             $username = replaceSpecialChars($username);
-			
-			if (strlen($username) > 20) {
-				$trimLevel++;
-				$username = createUsername($wisaStudent, false, $trimLevel);
-			}
+
+            if (strlen($username) > 20) {
+                $trimLevel++;
+                $username = createUsername($wisaStudent, false, $trimLevel);
+            }
             return $username;
         }
 
+
         $syncSettingsStudent = $this->config['sync_instellingen']['leerling'];
         $wamUsers = array();
-        $usernameList = Array();
+        $samAccountNameList = Array();
+        $userPrincipalNameList = Array();
         foreach ($report->getNotInAd() as $wisaStudent) {
             $salt = null;
-            $username = createUsername($wisaStudent, $salt, null);
-            while ($this->adUserExist($username)) {
+            $userSamAccountName = createSamAccountName($wisaStudent, $salt, null);
+            $upnSalt = null;
+            $userPrincipalName = createUserPrincipalName($wisaStudent, $upnSalt);
+            while ($this->adSamAccountNameExist($userSamAccountName)) {
                 $salt++;
-                $username = createUsername($wisaStudent, $salt, null);
+                $userSamAccountName = createSamAccountName($wisaStudent, $salt, null);
             }
-            while (in_array($username,$usernameList)) {
+            while ($this->adUserPrincipalNameExist($userPrincipalName.'@'.$syncSettingsStudent['domainname'])) {
+                $upnSalt++;
+                $userPrincipalName = createUserPrincipalName($wisaStudent,$upnSalt);
+            }
+
+            while (in_array($userSamAccountName,$samAccountNameList)) {
                 $salt++;
-                $username = createUsername($wisaStudent, $salt, null);
+                $userSamAccountName = createSamAccountName($wisaStudent, $salt, null);
             }
-            $usernameList[] = $username;
-            $primarySmtp = $username . '@' . $syncSettingsStudent['domainname'];
+            while (in_array($userPrincipalName,$userPrincipalNameList)) {
+                $upnSalt++;
+                $userPrincipalName = createUserPrincipalName($wisaStudent,$upnSalt);
+            }
+            $samAccountNameList[] = $userSamAccountName;
+            $userPrincipalNameList[] = $userPrincipalName;
+            $userPrincipalName = $userPrincipalName . '@' . $syncSettingsStudent['domainname'];
 
             if ($_GET['sync_report'])
                 $wamUser = new \Snor\UserImport\Bll\WamUser();
@@ -256,7 +305,7 @@ class SyncController
             $wamUser->setChangePasswordAtLogon((bool) $syncSettingsStudent['change_password_at_logon']);
             $wamUser->setFirstName($wisaStudent->getFirstName());
             $wamUser->setDisplayName($wisaStudent->getFirstName().' '.$wisaStudent->getLastName().' | '.$syncSettingsStudent['role'].' '.$syncSettingsStudent['school_name']);
-            $wamUser->setEmailAddress($primarySmtp);
+            $wamUser->setEmailAddress($userPrincipalName);
             $wamUser->setEnabled($syncSettingsStudent['enable_account']);
             $wamUser->setLastName($wisaStudent->getLastName());
 
@@ -276,9 +325,9 @@ class SyncController
             }
 
             $wamUser->setRole($syncSettingsStudent['role']);
-            $wamUser->setSamAccountName($username);
+            $wamUser->setSamAccountName($userSamAccountName);
             $wamUser->setSchoolName($syncSettingsStudent['school_name']);
-            $wamUser->setUserPrincipalName($primarySmtp);
+            $wamUser->setUserPrincipalName($userPrincipalName);
 
             $availableGroups = $syncSettingsStudent['ad_groepen'];
             foreach ($availableGroups as $groupObj) {
@@ -288,7 +337,7 @@ class SyncController
             }
             //test
             //echo $wamUser->getAdministrativeId() . ',' . $wamUser->getFirstName() . ',' . $wamUser->getLastName() . ',' . $wamUser->getEmailAddress() . ',' . mb_detect_encoding($wamUser->getEmailAddress()).'<br>';
-            echo $wamUser->getAdministrativeId() . ',' . $wamUser->getFirstName() . ',' . $wamUser->getLastName() . ',' . $username . ',' . $wamUser->getDisplayName() . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
+            echo $wamUser->getAdministrativeId() . ',' . $wamUser->getFirstName() . ',' . $wamUser->getLastName() . ',' . $userPrincipalName . ',' . $userSamAccountName . ',' . $wamUser->getDisplayName() . '<br>'; // .',' . mb_detect_encoding($username) . '<br>';
 
             $wamUsers[] = $wamUser;
 

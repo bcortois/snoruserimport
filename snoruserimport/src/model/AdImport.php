@@ -89,10 +89,18 @@ class AdImport
         return utf8_encode($string);
     }
 
-    public function userExists($samAccountName) {
+    public function samAccountNameExists($samAccountName) {
         $result = false;
         if($this->dataStore->connect()) {
-            $result = $this->dataStore->userExists($samAccountName);
+            $result = $this->dataStore->samAccountNameExists($samAccountName);
+        }
+        $this->dataStore->disconnect();
+        return $result;
+    }
+    public function userPrincipalNameExists($userPrincipalName) {
+        $result = false;
+        if($this->dataStore->connect()) {
+            $result = $this->dataStore->userPrincipalNameExists($userPrincipalName);
         }
         $this->dataStore->disconnect();
         return $result;

@@ -71,9 +71,21 @@ class AdConnector
         return ldap_modify($this->ldapConnection,$dn,$attributes);
     }
 
-    public function userExists($samAccountName) {
+    public function samAccountNameExists($samAccountName) {
 
         $this->adConnectorInfo->setLdapFilter('(sAMAccountName='.$samAccountName.')');
+
+        $searchResult = ldap_search($this->ldapConnection,$this->adConnectorInfo->getSearchBaseDn(),$this->adConnectorInfo->getLdapFilter(),$this->adConnectorInfo->getAttributes());
+        ldap_sort($this->ldapConnection,$searchResult,'sn');
+        $rows = ldap_get_entries($this->ldapConnection, $searchResult);
+        if($rows['count'] > 0) {
+            return true;
+        }
+    }
+
+    public function userPrincipalNameExists($userPrincipalName) {
+
+        $this->adConnectorInfo->setLdapFilter('(userPrincipalName='.$userPrincipalName.')');
 
         $searchResult = ldap_search($this->ldapConnection,$this->adConnectorInfo->getSearchBaseDn(),$this->adConnectorInfo->getLdapFilter(),$this->adConnectorInfo->getAttributes());
         ldap_sort($this->ldapConnection,$searchResult,'sn');
